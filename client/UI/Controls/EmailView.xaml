@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LingoHammer.UI.Controls.EmailView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:local="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Style="{StaticResource DefaultContentView}">
+
+    <Grid
+        x:Name="BindingContainer"
+        ColumnDefinitions="*"
+        RowDefinitions="Auto, Auto"
+        Style="{StaticResource DefaultGrid}">
+
+        <Grid.BindingContext>
+            <local:EmailViewModel />
+        </Grid.BindingContext>
+
+        <Label FontSize="Caption" Text="{Binding Caption}" />
+
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="*, 24"
+            RowDefinitions="Auto"
+            Style="{StaticResource DefaultGrid}">
+
+            <Entry
+                IsSpellCheckEnabled="False"
+                IsTextPredictionEnabled="False"
+                Keyboard="Email"
+                Text="{Binding Email, Mode=TwoWay}" />
+
+
+            <Image
+                Grid.Column="1"
+                IsVisible="{Binding Email, Converter={toolkit:IsStringNotNullOrEmptyConverter}}"
+                Source="{StaticResource ExlamationFailed18}"
+                Style="{StaticResource ImageEntry}">
+                <Image.Triggers>
+                    <DataTrigger
+                        Binding="{Binding IsEmailValid}"
+                        TargetType="Image"
+                        Value="True">
+                        <Setter Property="Source" Value="{StaticResource CheckSuccess18}" />
+                    </DataTrigger>
+                </Image.Triggers>
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding EmailErrorInfoCommand}" />
+                </Image.GestureRecognizers>
+            </Image>
+        </Grid>
+    </Grid>
+</ContentView>

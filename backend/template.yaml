@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  LingoHammer Serverless
+
+
+Resources:
+  LingoHammerUserPool:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: UsersPool/template.yaml
+      TimeoutInMinutes: 5
+      Parameters:
+        ParentStackName: !Ref AWS::StackName
+
+  LingoHammerAuth:
+    Type: AWS::Serverless::Application    
+    Properties:
+      Location: LingoHammerAuth/sam/template.yaml
+      TimeoutInMinutes: 10
+      Parameters:
+        ParentStackName: !Ref AWS::StackName
+        UserPoolArn: !GetAtt LingoHammerUserPool.Outputs.UserPoolArn
+        
+  LingoHammerBackend:
+    Type: AWS::Serverless::Application    
+    Properties:
+      Location: LingoHammerBackend/sam/template.yaml
+      TimeoutInMinutes: 10
+      Parameters:
+        ParentStackName: !Ref AWS::StackName        
+

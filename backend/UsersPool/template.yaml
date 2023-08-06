@@ -1,0 +1,251 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  LingoHammer User Pool Setup
+
+Parameters:
+  ParentStackName:
+    Description: Stack Name
+    Type: String
+    Default: none    
+
+Resources:
+  LingoHammerUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub
+        - 'LingoHammerUserPool-${ParentStack}'
+        - ParentStack: !Ref ParentStackName      
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          TemporaryPasswordValidityDays: 7  
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: "firstName"
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+        - Name: "lastName"
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      EmailVerificationSubject: LingoHammer User Verification
+      EmailVerificationMessage: LingoHammer verification code is {####}.
+      SmsVerificationMessage: LingoHammer verification code is {####}.
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: false
+      MfaConfiguration: "OFF"
+
+  LingoHammerUserPoolClient:
+    Type: "AWS::Cognito::UserPoolClient"
+    Properties:
+      ClientName: !Sub
+        - 'LingoHammerUserPoolClient-${ParentStack}'
+        - ParentStack: !Ref ParentStackName 
+      GenerateSecret: true
+      UserPoolId: !Ref LingoHammerUserPool      
+      AccessTokenValidity: 1
+      RefreshTokenValidity: 30
+      IdTokenValidity: 1
+      TokenValidityUnits:
+        AccessToken: days
+        RefreshToken: days
+        IdToken: days
+
+      ExplicitAuthFlows:
+        - "ALLOW_ADMIN_USER_PASSWORD_AUTH"
+        - "ALLOW_USER_PASSWORD_AUTH"
+        - "ALLOW_USER_SRP_AUTH"
+        - "ALLOW_REFRESH_TOKEN_AUTH" 
+    
+  LingoHammerSetupIAMRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole    
+
+  LingoHammerSetupPolicy:
+    Type: "AWS::IAM::Policy" 
+    Properties:
+      PolicyName: !Sub
+        - 'LingoHammerSetupPolicy-${ParentStack}'
+        - ParentStack: !Ref ParentStackName
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter              
+              - ssm:PutParameter
+              - ssm:DeleteParameter              
+              - ssm:GetParametersByPath
+            Resource: !Sub
+              - 'arn:aws:ssm:*:${AWS::AccountId}:parameter/api/${ParentStack}/*'
+              - ParentStack: !Ref ParentStackName
+          - Effect: Allow
+            Action:
+              - cognito-idp:DescribeUserPoolClient
+              - cognito-idp:ListUserPoolClients
+            Resource: !Sub 
+               - 'arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPoolClientId}'
+               - UserPoolClientId: !Ref LingoHammerUserPoolClient             
+          - Effect: Allow
+            Action:
+              - kms:Encrypt 
+            Resource:  !Sub 'arn:aws:kms:*:${AWS::AccountId}:key/alias/aws/ssm'
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream 
+              - logs:CreateLogGroup              
+              - logs:PutLogEvents
+            Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*'
+      Roles:
+        - !Ref LingoHammerSetupIAMRole    
+   
+  LingoHammerSetupFunction:
+      Type: AWS::Lambda::Function
+      Properties:
+        FunctionName: !Sub
+          - 'LingoHammerSetupFunction-${ParentStack}'
+          - ParentStack: !Ref ParentStackName
+        Runtime: nodejs14.x
+        Architectures:
+          - x86_64
+        Handler: index.handler        
+        Role: !GetAtt LingoHammerSetupIAMRole.Arn
+        Code: 
+          ZipFile: |
+              const AWS = require('aws-sdk');
+              const ssm = new AWS.SSM();
+              const cognito = new AWS.CognitoIdentityServiceProvider();
+
+              exports.handler = async (event, context) => {
+                  console.log('Event:');
+                  console.log(JSON.stringify(event));
+                  
+                  const { RequestType, ResourceProperties } = event;
+                  const userPoolId = ResourceProperties.UserPoolId;
+                  const clientId = ResourceProperties.UserPoolClientId;
+                  const parameterName = ResourceProperties.ParameterName;
+
+                  try {
+                      if (RequestType === 'Create' || RequestType === 'Update') {
+                          // Get the User Pool Client details
+                          const userPoolClient = await cognito.describeUserPoolClient({
+                              UserPoolId: userPoolId,
+                              ClientId: clientId
+                          }).promise();
+
+                          const clientSecret = userPoolClient.UserPoolClient.ClientSecret; 
+
+                          // Write the Client Secret to SSM Parameter Store
+
+                          await ssm.putParameter({
+                              Name: parameterName +"/userPoolId",
+                              Value: userPoolId,
+                              Type: 'SecureString',
+                              Overwrite: true
+                          }).promise();
+
+                          await ssm.putParameter({
+                              Name: parameterName +"/userPoolClientId",
+                              Value: clientId,
+                              Type: 'SecureString',
+                              Overwrite: true
+                          }).promise();
+
+                          await ssm.putParameter({
+                              Name: parameterName +"/userPoolClientSecret",
+                              Value: clientSecret,
+                              Type: 'SecureString',
+                              Overwrite: true
+                          }).promise();
+
+                        
+
+                          // Send a response back to CloudFormation indicating success
+                          return sendResponse(event, context, 'SUCCESS',clientSecret);
+                      } else if (RequestType === 'Delete') {
+                          try{
+                              // If it's a Delete event, you may choose to delete the SSM parameter if needed
+                              await ssm.deleteParameter({
+                                Name: parameterName +"/userPoolId"
+                              }).promise();
+
+                              await ssm.deleteParameter({
+                                Name: parameterName +"/userPoolClientId"
+                              }).promise();
+
+                              await ssm.deleteParameter({
+                                  Name: parameterName +"/userPoolClientSecret"
+                              }).promise();
+                          }catch(ignore){
+                              console.error('Failed to delete parameter:', ignore.message);
+                          }
+
+                          // Send a response back to CloudFormation indicating success
+                          return sendResponse(event, context, 'SUCCESS',"");
+                      } else {
+                          console.error('Error: Invalid RequestType');
+                          return sendResponse(event, context, 'SUCCESS',"");
+                      }
+                  } catch (error) {
+                      console.error('Error:', error.message);        
+                      //do not fail the CFN stack
+                      return sendResponse(event, context, 'SUCCESS',"");
+                  }
+              };
+
+              function sendResponse(event, context, responseStatus,clientSecret) {
+                  var response = require('cfn-response');
+                  response.send(event, context, responseStatus, {
+                      ClientSecret: clientSecret
+                  }); 
+              }
+
+      
+  
+  # LingoHammerSetupFunctionResource:
+  #   Type: AWS::CloudFormation::CustomResource
+  #   Properties:
+  #     ServiceToken: !GetAtt LingoHammerSetupFunction.Arn
+  #     UserPoolId: !Ref LingoHammerUserPool
+  #     UserPoolClientId: !Ref LingoHammerUserPoolClient
+  #     ParameterName: !Sub
+  #             - '/api/${ParentStack}/userPool'
+  #             - ParentStack: !Ref ParentStackName
+
+Outputs:
+  UserPoolId:
+    Value: !Ref LingoHammerUserPool
+    Export:
+      Name: LingoHammerUserPoolId
+  UserPoolArn:
+    Value: !GetAtt LingoHammerUserPool.Arn
+    Export:
+      Name: LingoHammerUserPoolArn
+  UserPoolClientId:
+    Value: !Ref LingoHammerUserPoolClient
+    Export:
+      Name: LingoHammerUserPoolClientClientId

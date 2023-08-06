@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:s="clr-namespace:LingoHammer.Common">
+
+    <FontImageSource
+        x:Key="EyeSlash18"
+        FontFamily="{StaticResource FontLight}"
+        Glyph="{x:Static s:IconFont.EyeSlash}"
+        Size="18"
+        Color="{AppThemeBinding Light={StaticResource Gray200},
+                                Dark={StaticResource Gray500}}" />
+
+    <FontImageSource
+        x:Key="Eye18"
+        FontFamily="{StaticResource FontLight}"
+        Glyph="{x:Static s:IconFont.Eye}"
+        Size="18"
+        Color="{AppThemeBinding Light={StaticResource Gray200},
+                                Dark={StaticResource Gray500}}" />
+
+    <FontImageSource
+        x:Key="CheckSuccess18"
+        FontFamily="{StaticResource FontLight}"
+        Glyph="{x:Static s:IconFont.Check}"
+        Size="18"
+        Color="{StaticResource ColorPigmentGreen}" />
+
+    <FontImageSource
+        x:Key="ExlamationFailed18"
+        FontFamily="{StaticResource FontLight}"
+        Glyph="{x:Static s:IconFont.ExclamationTriangle}"
+        Size="18"
+        Color="{StaticResource ColorRuby}" />
+
+
+    <FontImageSource
+        x:Key="CloseIcon12"
+        FontFamily="{StaticResource FontLight}"
+        Glyph="{x:Static s:IconFont.XMark}"
+        Size="12"
+        Color="{StaticResource Gray600}" />
+
+
+</ResourceDictionary>

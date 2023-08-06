@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LingoHammer.UI.Modules.Authentication.Login.TemsAndConditionsView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:local="clr-namespace:LingoHammer.UI.Modules.Authentication.Login"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Style="{StaticResource DefaultContentView}">
+
+    <Grid
+        ColumnDefinitions="*, Auto, Auto, Auto, *"
+        RowDefinitions="Auto, Auto"
+        Style="{StaticResource DefaultGrid}">
+
+        <Grid.BindingContext>
+            <local:TermsAndConditionsViewModel />
+        </Grid.BindingContext>
+
+        <Label
+            Grid.ColumnSpan="5"
+            FontSize="Micro"
+            HorizontalOptions="Center"
+            Text="By using this application you agree to our"
+            TextColor="{StaticResource ColorSecorndayInformation}" />
+
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            FontAttributes="Bold"
+            FontSize="Micro"
+            Text=" Terms of Service "
+            TextColor="{StaticResource ColorSecorndayInformation}"
+            TextDecorations="Underline">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding TermsOfServiceCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <Label
+            Grid.Row="1"
+            Grid.Column="2"
+            FontSize="Micro"
+            Text=" and "
+            TextColor="{StaticResource ColorSecorndayInformation}" />
+
+        <Label
+            Grid.Row="1"
+            Grid.Column="3"
+            FontAttributes="Bold"
+            FontSize="Micro"
+            Text=" Privacy Policy "
+            TextColor="{StaticResource ColorSecorndayInformation}"
+            TextDecorations="Underline">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding PrivacyPolicyCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+    </Grid>
+</ContentView>

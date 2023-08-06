@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    x:Class="LingoHammer.UI.Controls.EntryFieldView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:local="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Style="{StaticResource DefaultContentView}">
+
+    <Grid
+        x:Name="BindingContainer"
+        ColumnDefinitions="*"
+        RowDefinitions="Auto, Auto, Auto"
+        Style="{StaticResource DefaultGrid}">
+
+
+        <Grid.BindingContext>
+            <local:EntryFieldViewModel />
+        </Grid.BindingContext>
+
+        <Label
+            Margin="0"
+            Padding="0"
+            FontSize="Caption"
+            Text="{Binding Caption}" />
+
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="*, 24"
+            RowDefinitions="Auto"
+            Style="{StaticResource DefaultGrid}">
+            <Entry
+                IsSpellCheckEnabled="False"
+                IsTextPredictionEnabled="False"
+                Keyboard="Default"
+                Text="{Binding Text, Mode=TwoWay}" />
+        </Grid>
+
+        <Label
+            Grid.Row="2"
+            FontSize="8"
+            HorizontalOptions="StartAndExpand"
+            IsVisible="{Binding ErrorMessage, Converter={toolkit:IsStringNotNullOrEmptyConverter}}"
+            Text="{Binding ErrorMessage}"
+            TextColor="{StaticResource ColorError}" />
+    </Grid>
+</ContentView>

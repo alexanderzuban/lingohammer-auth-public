@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<AbsoluteLayout
+    x:Class="LingoHammer.UI.Controls.OverlayView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:local="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit">
+
+    <!--  specific styles  -->
+    <AbsoluteLayout.Resources>
+        <ResourceDictionary>
+            <Style x:Key="BusyPendingStyle" TargetType="ContentView">
+                <Setter Property="BackgroundColor" Value="Transparent" />
+            </Style>
+
+            <Style x:Key="BusyActiveStyle" TargetType="ContentView">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="Opacity" Value="0.5" />
+            </Style>
+        </ResourceDictionary>
+    </AbsoluteLayout.Resources>
+
+    <ContentView
+        x:Name="BindingContainer"
+        AbsoluteLayout.LayoutBounds="0,0,1,1"
+        AbsoluteLayout.LayoutFlags="All"
+        CascadeInputTransparent="False"
+        InputTransparent="False"
+        Style="{StaticResource BusyPendingStyle}">
+
+        <ContentView.BindingContext>
+            <local:OverlayViewModel />
+        </ContentView.BindingContext>
+
+        <ContentView.Triggers>
+            <DataTrigger
+                Binding="{Binding IsBusy}"
+                TargetType="ContentView"
+                Value="True">
+                <Setter Property="Style" Value="{StaticResource BusyActiveStyle}" />
+            </DataTrigger>
+        </ContentView.Triggers>
+
+        <ContentView.GestureRecognizers>
+            <TapGestureRecognizer Tapped="ConsumeInput" />
+        </ContentView.GestureRecognizers>
+
+
+        <ActivityIndicator
+            x:Name="BusyIndicator"
+            HorizontalOptions="Center"
+            IsRunning="True"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="Start" />
+
+    </ContentView>
+
+
+
+</AbsoluteLayout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LingoHammer.UI.Modules.Authentication.Register.RegisterPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:local="clr-namespace:LingoHammer.UI.Modules.Authentication.Register"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Title="Register">
+    <AbsoluteLayout
+        x:Name="BindingContainer"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill">
+
+        <AbsoluteLayout.BindingContext>
+            <local:RegisterPageModel />
+        </AbsoluteLayout.BindingContext>
+
+        <VerticalStackLayout
+            AbsoluteLayout.LayoutBounds="{OnPlatform Default='0,0,1,1',
+                                                     WinUI='0.5,0,0.5,1'}"
+            AbsoluteLayout.LayoutFlags="XProportional,HeightProportional,WidthProportional"
+            Style="{StaticResource DefaultVerticalStackLayout}">
+
+            <ContentView HeightRequest="50" Style="{StaticResource DefaultContentView}">
+                <c:NoticeView
+                    HasClose="True"
+                    Message="{Binding Error}"
+                    NoticeType="Error" />
+            </ContentView>
+
+            <VerticalStackLayout toolkit:StateContainer.CurrentState="{Binding CurrentState}" Style="{StaticResource DefaultVerticalStackLayout}">
+                <toolkit:StateContainer.StateViews>
+
+                    <c:LazyStateView
+                        toolkit:StateView.StateKey="{x:Static local:RegisterPageModelState.Init}"
+                        x:TypeArguments="local:RegisterPageInitView"
+                        TriggerState="{Binding CurrentState}" />
+
+                    <c:LazyStateView
+                        toolkit:StateView.StateKey="{x:Static local:RegisterPageModelState.Confirm}"
+                        x:TypeArguments="local:RegisterPageConfirmView"
+                        TriggerState="{Binding CurrentState}" />
+
+                </toolkit:StateContainer.StateViews>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+
+
+        <c:OverlayView
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            AbsoluteLayout.LayoutFlags="All"
+            BusyDelay="2000"
+            BusyTimeout="20000"
+            IsVisible="{Binding IsBusy, Mode=TwoWay}" />
+
+    </AbsoluteLayout>
+</ContentPage>

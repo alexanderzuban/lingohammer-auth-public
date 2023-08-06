@@ -1,0 +1,165 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  LingoHammer Backend User Pool Setup
+
+Parameters:
+  ParentStackName:
+    Description: Stack Name
+    Type: String
+    Default: none
+  UserPoolArn:
+    Description: Target User Pool ARN
+    Type: String
+    Default: none
+
+Globals:
+  Function:
+    Timeout: 20
+    MemorySize: 2048
+    Runtime: java17
+    CodeUri: ../.
+    AutoPublishAlias: live
+    DeploymentPreference:
+      Type: AllAtOnce
+    SnapStart:
+      ApplyOn: PublishedVersions
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+        STACK_NAME: !Sub '${ParentStackName}'
+
+
+Resources:
+
+  LingoHammerAuthLoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.lingohammer.aws.auth.AuthServiceLoginHandler::handleRequest
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: !Sub 'api/${ParentStackName}/*'
+        - KMSDecryptPolicy:
+            KeyId: 'alias/aws/ssm'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminGetUser
+              Resource: !Sub ${UserPoolArn}
+      Events:
+        LingoHammer:
+          Type: Api
+          Properties:
+            Path: /auth/user/login
+            Method: POST
+
+
+  LingoHammerAuthRegisterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.lingohammer.aws.auth.AuthServiceRegisterHandler::handleRequest
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: !Sub 'api/${ParentStackName}/*'
+        - KMSDecryptPolicy:
+            KeyId: 'alias/aws/ssm'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminGetUser
+                - cognito-idp:AdminDeleteUser
+                - cognito-idp:AdminDisableUser
+              Resource: !Sub ${UserPoolArn}
+      Events:
+        LingoHammer:
+          Type: Api
+          Properties:
+            Path: /auth/user/register
+            Method: POST
+
+
+  LingoHammerAuthConfirmFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.lingohammer.aws.auth.AuthServiceConfirmHandler::handleRequest
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: !Sub 'api/${ParentStackName}/*'
+        - KMSDecryptPolicy:
+            KeyId: 'alias/aws/ssm'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminGetUser
+              Resource: !Sub ${UserPoolArn}
+      Events:
+        LingoHammer:
+          Type: Api
+          Properties:
+            Path: /auth/user/confirm
+            Method: POST
+
+  LingoHammerAuthUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.lingohammer.aws.auth.AuthServiceUserInfoHandler::handleRequest
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: !Sub 'api/${ParentStackName}/*'
+        - KMSDecryptPolicy:
+            KeyId: 'alias/aws/ssm'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminGetUser
+              Resource: !Sub ${UserPoolArn}
+      Events:
+        LingoHammer:
+          Type: Api
+          Properties:
+            Path: /auth/user
+            Method: POST
+
+  LingoHammerAuthResetPasswordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.lingohammer.aws.auth.AuthServiceRestorePasswordHandler::handleRequest
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: !Sub 'api/${ParentStackName}/*'
+        - KMSDecryptPolicy:
+            KeyId: 'alias/aws/ssm'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminGetUser
+              Resource: !Sub ${UserPoolArn}
+      Events:
+        LingoHammer:
+          Type: Api
+          Properties:
+            Path: /auth/user/password/reset
+            Method: POST
+
+  LingoHammerAuthResetPasswordConfirmFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.lingohammer.aws.auth.AuthServiceRestorePasswordConfirmHandler::handleRequest
+      Policies:
+        - SSMParameterReadPolicy:
+            ParameterName: !Sub 'api/${ParentStackName}/*'
+        - KMSDecryptPolicy:
+            KeyId: 'alias/aws/ssm'
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminGetUser
+              Resource: !Sub ${UserPoolArn}
+      Events:
+        LingoHammer:
+          Type: Api
+          Properties:
+            Path: /auth/user/password/confirm
+            Method: POST

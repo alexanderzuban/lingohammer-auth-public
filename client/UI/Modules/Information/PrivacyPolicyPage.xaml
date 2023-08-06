@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LingoHammer.UI.Modules.Information.PrivacyPolicyPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:LingoHammer.UI.Modules.Information"
+    Title="Privacy Policy">
+
+    <local:InformationView
+        AcceptButtonText="Accept"
+        ContentResourceKey="PrivicyPolicies.html"
+        DeclineButtonText="Decline"
+        HasAcceptButton="True"
+        HasDeclineButton="True" />
+
+</ContentPage>

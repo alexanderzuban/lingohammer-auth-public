@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="LingoHammer.UI.Modules.Main.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+    xmlns:local="clr-namespace:LingoHammer.UI.Modules.Main">
+
+
+
+    <VerticalStackLayout
+        x:Name="BindingContainer"
+        HorizontalOptions="Center"
+        Spacing="20"
+        VerticalOptions="Center">
+
+        <VerticalStackLayout.BindingContext>
+            <local:MainPageModel />
+        </VerticalStackLayout.BindingContext>
+
+        <Label HorizontalOptions="Center" VerticalOptions="Center">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Welcome " />
+                    <Span Text="{Binding UserName}" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+
+        <Button Clicked="OnLogout" Text="Logout" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

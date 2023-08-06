@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:LingoHammer.UI.Controls">
+
+
+    <Style x:Key="NoticeInformationStyle" TargetType="c:NoticeView">
+        <Setter Property="NoticeTextColor" Value="#1d5461" />
+        <Setter Property="NoticeBackgroundColor" Value="#d4ecf1" />
+        <Setter Property="NoticeBorderColor" Value="#c2e5ec" />
+    </Style>
+    <Style x:Key="NoticeWarningStyle" TargetType="c:NoticeView">
+        <Setter Property="NoticeTextColor" Value="#a56404" />
+        <Setter Property="NoticeBackgroundColor" Value="#fff3cd" />
+        <Setter Property="NoticeBorderColor" Value="#ffeeba" />
+    </Style>
+    <Style x:Key="NoticeErrorStyle" TargetType="c:NoticeView">
+        <Setter Property="NoticeTextColor" Value="#721c24" />
+        <Setter Property="NoticeBackgroundColor" Value="#f8d7da" />
+        <Setter Property="NoticeBorderColor" Value="#f5c6cb" />
+    </Style>
+    <Style x:Key="NoticeSuccessStyle" TargetType="c:NoticeView">
+        <Setter Property="NoticeTextColor" Value="#155724" />
+        <Setter Property="NoticeBackgroundColor" Value="#d4edda" />
+        <Setter Property="NoticeBorderColor" Value="#c3e6cb" />
+    </Style>
+
+</ResourceDictionary>
