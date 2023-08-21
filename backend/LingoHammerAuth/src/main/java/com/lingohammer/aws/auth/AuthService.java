@@ -1,6 +1,18 @@
 package com.lingohammer.aws.auth;
 
-import com.lingohammer.aws.auth.data.*;
+import com.lingohammer.aws.auth.data.IsFlawed;
+import com.lingohammer.aws.auth.process.info.UserInfoRequest;
+import com.lingohammer.aws.auth.process.info.UserInfoResponse;
+import com.lingohammer.aws.auth.process.login.LoginRequest;
+import com.lingohammer.aws.auth.process.login.LoginResponse;
+import com.lingohammer.aws.auth.process.register.RegistrationConfirmRequest;
+import com.lingohammer.aws.auth.process.register.RegistrationConfirmResponse;
+import com.lingohammer.aws.auth.process.register.RegistrationRequest;
+import com.lingohammer.aws.auth.process.register.RegistrationResponse;
+import com.lingohammer.aws.auth.process.restore.RestorePasswordConfirmRequest;
+import com.lingohammer.aws.auth.process.restore.RestorePasswordConfirmResponse;
+import com.lingohammer.aws.auth.process.restore.RestorePasswordRequest;
+import com.lingohammer.aws.auth.process.restore.RestorePasswordResponse;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +33,7 @@ import jakarta.ws.rs.Produces;
 )
 @Produces("application/json")
 @Consumes("application/json")
-public class AuthService {
+public interface AuthService {
 
     public static final String DOCUMENTATION_ONLY = "Documentation only";
 
@@ -54,9 +66,7 @@ public class AuthService {
                                     schema = @Schema(implementation = IsFlawed.class)
                             ))
             })
-    public LoginResponse login(LoginRequest request) {
-        throw new AuthRuntimeException(DOCUMENTATION_ONLY);
-    }
+    LoginResponse login(LoginRequest request);
 
     @Path("/auth/user/register")
     @POST
@@ -68,13 +78,13 @@ public class AuthService {
                     @Parameter(name = "body",
                             description = "User to register",
                             required = true,
-                            schema = @Schema(implementation = RegisterRequest.class))
+                            schema = @Schema(implementation = RegistrationRequest.class))
             },
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "Success",
                             content = @Content(
-                                    schema = @Schema(implementation = RegisterResponse.class)
+                                    schema = @Schema(implementation = RegistrationResponse.class)
                             )),
                     @ApiResponse(responseCode = "400",
                             description = "Error",
@@ -82,9 +92,7 @@ public class AuthService {
                                     schema = @Schema(implementation = IsFlawed.class)
                             ))
             })
-    public RegisterResponse register(RegisterRequest request) {
-        throw new AuthRuntimeException(DOCUMENTATION_ONLY);
-    }
+    RegistrationResponse register(RegistrationRequest request);
 
     @Path("/auth/user/confirm")
     @POST
@@ -96,13 +104,13 @@ public class AuthService {
                     @Parameter(name = "body",
                             description = "User to confirm",
                             required = true,
-                            schema = @Schema(implementation = ConfirmRegistrationRequest.class))
+                            schema = @Schema(implementation = RegistrationConfirmRequest.class))
             },
             responses = {
                     @ApiResponse(responseCode = "200",
                             description = "Success",
                             content = @Content(
-                                    schema = @Schema(implementation = ConfirmRegistrationResponse.class)
+                                    schema = @Schema(implementation = RegistrationConfirmResponse.class)
                             )),
                     @ApiResponse(responseCode = "400",
                             description = "Error",
@@ -110,9 +118,7 @@ public class AuthService {
                                     schema = @Schema(implementation = IsFlawed.class)
                             ))
             })
-    public ConfirmRegistrationResponse confirmRegistration(ConfirmRegistrationRequest request) {
-        throw new AuthRuntimeException(DOCUMENTATION_ONLY);
-    }
+    RegistrationConfirmResponse confirmRegistration(RegistrationConfirmRequest request);
 
     @Path("/auth/user")
     @POST
@@ -138,9 +144,7 @@ public class AuthService {
                                     schema = @Schema(implementation = IsFlawed.class)
                             ))
             })
-    public UserInfoResponse getUser(UserInfoRequest request) {
-        throw new AuthRuntimeException(DOCUMENTATION_ONLY);
-    }
+    UserInfoResponse getUser(UserInfoRequest request);
 
     @Path("/auth/user/password/reset")
     @POST
@@ -166,9 +170,7 @@ public class AuthService {
                                     schema = @Schema(implementation = IsFlawed.class)
                             ))
             })
-    public RestorePasswordResponse passwordReset(RestorePasswordRequest request) {
-        throw new AuthRuntimeException(DOCUMENTATION_ONLY);
-    }
+    RestorePasswordResponse passwordReset(RestorePasswordRequest request);
 
     @Path("/auth/user/password/confirm")
     @POST
@@ -194,9 +196,7 @@ public class AuthService {
                                     schema = @Schema(implementation = IsFlawed.class)
                             ))
             })
-    public RestorePasswordConfirmResponse passwordConfirmReset(RestorePasswordConfirmRequest request) {
-        throw new AuthRuntimeException(DOCUMENTATION_ONLY);
-    }
+    RestorePasswordConfirmResponse passwordConfirmReset(RestorePasswordConfirmRequest request);
 
 
 }

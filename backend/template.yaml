@@ -21,12 +21,5 @@ Resources:
       Parameters:
         ParentStackName: !Ref AWS::StackName
         UserPoolArn: !GetAtt LingoHammerUserPool.Outputs.UserPoolArn
-        
-  LingoHammerBackend:
-    Type: AWS::Serverless::Application    
-    Properties:
-      Location: LingoHammerBackend/sam/template.yaml
-      TimeoutInMinutes: 10
-      Parameters:
-        ParentStackName: !Ref AWS::StackName        
+ 
 

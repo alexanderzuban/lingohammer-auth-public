@@ -37,7 +37,7 @@ Resources:
   LingoHammerAuthLoginFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.lingohammer.aws.auth.AuthServiceLoginHandler::handleRequest
+      Handler: com.lingohammer.aws.auth.process.login.LoginLambdaHandler::handleRequest
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: !Sub 'api/${ParentStackName}/*'
@@ -55,11 +55,16 @@ Resources:
             Path: /auth/user/login
             Method: POST
 
+  LingoHammerAuthLoginFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${LingoHammerAuthLoginFunction}'
+      RetentionInDays: 30
 
   LingoHammerAuthRegisterFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.lingohammer.aws.auth.AuthServiceRegisterHandler::handleRequest
+      Handler: com.lingohammer.aws.auth.process.register.RegistrationLambdaHandler::handleRequest
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: !Sub 'api/${ParentStackName}/*'
@@ -79,11 +84,16 @@ Resources:
             Path: /auth/user/register
             Method: POST
 
+  LingoHammerAuthRegisterFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${LingoHammerAuthRegisterFunction}'
+      RetentionInDays: 30
 
   LingoHammerAuthConfirmFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.lingohammer.aws.auth.AuthServiceConfirmHandler::handleRequest
+      Handler: com.lingohammer.aws.auth.process.register.RegistrationConfirmLambdaHandler::handleRequest
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: !Sub 'api/${ParentStackName}/*'
@@ -101,10 +111,17 @@ Resources:
             Path: /auth/user/confirm
             Method: POST
 
+  LingoHammerAuthConfirmFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${LingoHammerAuthConfirmFunction}'
+      RetentionInDays: 30
+
+
   LingoHammerAuthUserFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.lingohammer.aws.auth.AuthServiceUserInfoHandler::handleRequest
+      Handler: com.lingohammer.aws.auth.process.info.UserInfoLambdaHandler::handleRequest
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: !Sub 'api/${ParentStackName}/*'
@@ -122,10 +139,16 @@ Resources:
             Path: /auth/user
             Method: POST
 
+  LingoHammerAuthUserFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${LingoHammerAuthUserFunction}'
+      RetentionInDays: 30
+
   LingoHammerAuthResetPasswordFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.lingohammer.aws.auth.AuthServiceRestorePasswordHandler::handleRequest
+      Handler: com.lingohammer.aws.auth.process.restore.RestorePasswordLambdaHandler::handleRequest
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: !Sub 'api/${ParentStackName}/*'
@@ -143,10 +166,17 @@ Resources:
             Path: /auth/user/password/reset
             Method: POST
 
+  LingoHammerAuthResetPasswordFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${LingoHammerAuthResetPasswordFunction}'
+      RetentionInDays: 30
+
+
   LingoHammerAuthResetPasswordConfirmFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.lingohammer.aws.auth.AuthServiceRestorePasswordConfirmHandler::handleRequest
+      Handler: com.lingohammer.aws.auth.process.restore.RestorePasswordConfirmLambdaHandler::handleRequest
       Policies:
         - SSMParameterReadPolicy:
             ParameterName: !Sub 'api/${ParentStackName}/*'
@@ -163,3 +193,9 @@ Resources:
           Properties:
             Path: /auth/user/password/confirm
             Method: POST
+
+  LingoHammerAuthResetPasswordConfirmFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${LingoHammerAuthResetPasswordConfirmFunction}'
+      RetentionInDays: 30

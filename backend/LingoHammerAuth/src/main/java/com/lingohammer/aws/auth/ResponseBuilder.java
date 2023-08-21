@@ -1,12 +1,8 @@
 package com.lingohammer.aws.auth;
 
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
-import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.lingohammer.aws.auth.data.IsFlawed;
-import com.lingohammer.aws.auth.service.LoggingService;
+import com.lingohammer.aws.auth.service.log.LoggingService;
 import com.lingohammer.aws.auth.util.ObjectMapperHelper;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
 
 import java.util.HashMap;
 import java.util.function.BiConsumer;
@@ -15,125 +11,79 @@ import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
 
-public class ResponseBuilder<K, T extends IsFlawed> extends IsFlawed {
-    private final HashMap<String, String> headers;
-    private final APIGatewayProxyResponseEvent response;
-    private T payload;
-    private K input;
+public class ResponseBuilder<I, O extends IsFlawed> extends IsFlawed {
+    protected final HashMap<String, String> headers;
 
-    private LambdaLogger logger;
+    protected final ResponseEvent response;
+    protected O payload;
+    protected I input;
 
-    public ResponseBuilder(Supplier<T> payloadSupplier) {
-        payload = payloadSupplier.get();
+    protected LoggingService logger;
 
-        headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
-        response = new APIGatewayProxyResponseEvent();
+    public ResponseBuilder(LoggingService logger, Supplier<O> payloadSupplier) {
+        this.payload = payloadSupplier.get();
+        this.logger = logger;
+
+        this.headers = new HashMap<>();
+        this.headers.put("Content-Type", "application/json");
+        this.response = createResponseEvent();
     }
 
-    public T getPayload() {
+    protected ResponseEvent createResponseEvent() {
+        return new ResponseEvent();
+    }
+
+    public O getPayload() {
         return payload;
     }
 
-    public void failed(AwsServiceException ex) {
-        payload.fail(
-                ex.awsErrorDetails().sdkHttpResponse().statusCode(), //
-                ex.awsErrorDetails().errorMessage() //
-        );
-    }
 
     public void failed(Exception ex) {
+        ofNullable(logger)
+                .ifPresent(l -> l.log(ex.getMessage()));
         payload.fail(500, ex.getMessage());
     }
 
-    public ResponseBuilder<K, T> withHeader(String header, String value) {
-        headers.put(header, value);
-        return this;
-    }
 
-    public ResponseBuilder<K, T> withLogger(LambdaLogger logger) {
-        this.logger = logger;
-        LoggingService.LOG.withLoggable(new LoggingService.TargetLog() {
-            @Override
-            public void log(String message) {
-                ofNullable(logger).ifPresent(l -> l.log(message));
-            }
-
-            @Override
-            public void log(byte[] message) {
-                ofNullable(logger).ifPresent(l -> l.log(message));
-            }
-        });
-        return this;
-
-    }
-
-    public ResponseBuilder<K, T> withRequest(Class<K> inputClass, APIGatewayProxyRequestEvent request) {
-     
+    public ResponseBuilder<I, O> withBody(Class<I> inputClass, String body) {
         try {
             var mapper = ObjectMapperHelper.getObjectMapper();
-            input = mapper.readValue(request.getBody(), inputClass);
-
-            //TODO debug
-            var requestContent = mapper.writeValueAsString(request);
-
-            ofNullable(logger)
-                    .ifPresent(l -> l.log("Input: " + requestContent));
-
-            ofNullable(logger)
-                    .ifPresent(l -> l.log("Request: " + request.getBody()));
-
+            input = mapper.readValue(body, inputClass);
         } catch (Exception ex) {
-            ofNullable(logger)
-                    .ifPresent(l -> l.log(ex.getMessage()));
             failed(ex);
         }
         return this;
     }
 
 
-    public ResponseBuilder<K, T> onPayload(Consumer<T> action) {
+    public ResponseBuilder<I, O> onPayload(Consumer<O> action) {
         try {
             if (payload.isSuccess()) {
                 action.accept(payload);
             }
-        } catch (AwsServiceException ex) {
-            ofNullable(logger)
-                    .ifPresent(l -> l.log(ex.awsErrorDetails().errorMessage()));
-            failed(ex);
         } catch (Exception ex) {
-            ofNullable(logger)
-                    .ifPresent(l -> l.log(ex.getMessage()));
             failed(ex);
         }
 
         return this;
     }
 
-    public ResponseBuilder<K, T> onInputAndPayload(BiConsumer<K, T> action) {
+    public ResponseBuilder<I, O> onInputAndPayload(BiConsumer<I, O> action) {
         try {
             if (payload.isSuccess()) {
                 action.accept(input, payload);
             }
-        } catch (AwsServiceException ex) {
-            ex.printStackTrace();
-            ofNullable(logger)
-                    .ifPresent(l -> l.log(ex.awsErrorDetails().errorMessage()));
-            failed(ex);
         } catch (Exception ex) {
-            ex.printStackTrace();
-            ofNullable(logger)
-                    .ifPresent(l -> l.log(ex.getMessage()));
             failed(ex);
         }
 
         return this;
     }
 
-    public APIGatewayProxyResponseEvent done() {
-        response.withHeaders(headers);
-        response.withBody(ObjectMapperHelper.toJson(payload));
-        response.withStatusCode(payload.getStatusCode());
-        return response;
+    public ResponseEvent done() {
+        return response.withHeaders(headers)
+                .withStatusCode(payload.getStatusCode())
+                .withBody(ObjectMapperHelper.toJson(payload));
+
     }
 }
