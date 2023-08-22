@@ -1,13 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LingoHammer.Auth;
 using LingoHammer.Services;
 using System.ComponentModel;
 
 namespace LingoHammer.UI.Modules.Authentication.Register;
 
 
-partial class RegisterPageModel : EmailPasswordModel
+partial class RegisterPageModel : AuthenticationModuleModel
 {
     [ObservableProperty]
     private string firstName = string.Empty;
@@ -49,19 +48,53 @@ partial class RegisterPageModel : EmailPasswordModel
         CurrentState = RegisterPageModelState.Init;
     }
 
-    [RelayCommand]
-    private void ConfirmRegistration()
+    [RelayCommand(AllowConcurrentExecutions = false)]
+    private async Task ConfirmRegistrationAsync()
     {
         StartOperation();
-        S.Authentication.StartRegistrationConfirmation(Email, Password, RegistrationConfirmationCode, ProcessRegistrationConfirmationResults);
+
+        try
+        {
+            await S.Authentication.ConfirmRegistrationAsync(Email, Password, RegistrationConfirmationCode);
+
+            (Application.Current as App).OnUserLoggedIn();
+        }
+        catch (AuthenticationServiceException ex)
+        {
+            IsConfirmRegistrationFailed = true;
+            Error = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
+
     [RelayCommand]
-    private void Register()
+    private async Task RegisterAsync()
     {
         StartOperation();
-        S.Authentication.StartRegistration(Email, Password, FirstName, LastName, ProcessRegistrationResults);
+        try
+        {
+            await S.Authentication.RegisterAsync(Email, Password, FirstName, LastName);
+            CurrentState = RegisterPageModelState.Confirm;
+        }
+        catch (AuthenticationServiceException ex)
+        {
+            if (ex.ErrorCode == -1)
+            {
+                IsUserAlreadyExists = true;
+            }
+
+            Error = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
+
 
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -87,7 +120,6 @@ partial class RegisterPageModel : EmailPasswordModel
     }
 
 
-
     private void StartOperation()
     {
         Error = "";
@@ -96,45 +128,7 @@ partial class RegisterPageModel : EmailPasswordModel
         IsUserAlreadyExists = false;
     }
 
-    private void ProcessRegistrationConfirmationResults(bool success, object result, string message, Exception error)
-    {
-        IsBusy = false;
-        if (success)
-        {
-            (Application.Current as App).OnUserLoggedIn();
-        }
-        else
-        {
-            IsConfirmRegistrationFailed = true;
-            S.Log.Error("Registration confirmation failed", error);
-            Error = message ?? error?.Message ?? "Registration confirmation failed";
-        }
-    }
 
-
-    private void ProcessRegistrationResults(bool success, object result, string message, Exception ex)
-    {
-        IsBusy = false;
-        if (success)
-        {
-            CurrentState = RegisterPageModelState.Confirm;
-        }
-        else
-        {
-            if (result is IsFlawed response)
-            {
-                if (response.ErrorCode == -1)
-                {
-                    IsUserAlreadyExists = true;
-                    Error = response.ErrorMessage;
-                    return;
-                }
-            }
-
-            S.Log.Error("Registration failed", ex);
-            Error = message ?? ex?.Message ?? "Registration failed";
-        }
-    }
 }
 
 public static class RegisterPageModelState

@@ -1,132 +1,107 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
+<d:ContentPageExt
     x:Class="LingoHammer.UI.Modules.Authentication.Login.LoginPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:c="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:d="clr-namespace:LingoHammer.UI.Controls.Disposable"
     xmlns:local="clr-namespace:LingoHammer.UI.Modules.Authentication.Login"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    ControlTemplate="{StaticResource AuthenticationPageTemplate}"
     NavigationPage.HasNavigationBar="False">
 
-    <AbsoluteLayout
-        x:Name="BindingContainer"
-        HorizontalOptions="Fill"
-        VerticalOptions="Fill">
+    <d:ContentPageExt.Resources>
+        <ResourceDictionary>
 
-        <AbsoluteLayout.BindingContext>
-            <local:LoginPageModel />
-        </AbsoluteLayout.BindingContext>
+            <ControlTemplate x:Key="LoginPageTitle">
+                <Label FontSize="Large" Text="Welcome to Lingo Hammer" />
+            </ControlTemplate>
 
+            <Style x:Key="AuthenticationPageTitle" TargetType="d:ContentViewExt">
+                <Setter Property="ControlTemplate" Value="{StaticResource LoginPageTitle}" />
+                <Setter Property="Margin" Value="0,50,0,0" />
+            </Style>
 
-        <!--  Title  -->
-        <Label
-            Margin="0,20,0,10"
-            AbsoluteLayout.LayoutBounds="0,0,1,1"
-            AbsoluteLayout.LayoutFlags="XProportional,HeightProportional,WidthProportional"
-            FontSize="Large"
-            HorizontalOptions="Center"
-            Text="Welcome to Lingo Hammer" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../AuthenticationPageResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </d:ContentPageExt.Resources>
 
-        <Grid
-            AbsoluteLayout.LayoutBounds="{OnPlatform Default='0,150,1,1',
-                                                     WinUI='0.5,150,0.5,1'}"
-            AbsoluteLayout.LayoutFlags="XProportional,HeightProportional,WidthProportional"
-            ColumnDefinitions="20,*,20"
-            RowDefinitions="Auto, Auto, 1, Auto, Auto"
-            RowSpacing="10"
-            Style="{StaticResource DefaultGrid}">
+    <d:ContentPageExt.BindingContext>
+        <local:LoginPageModel />
+    </d:ContentPageExt.BindingContext>
 
-
-            <ContentView
-                Grid.Column="1"
-                HeightRequest="50"
-                Style="{StaticResource DefaultContentView}">
-                <c:NoticeView
-                    HasClose="True"
-                    Message="{Binding Error}"
-                    NoticeType="Error" />
-            </ContentView>
-
-            <VerticalStackLayout
-                Grid.Row="1"
-                Grid.Column="1"
-                Spacing="10"
-                Style="{StaticResource DefaultVerticalStackLayout}">
+    <d:GridExt
+        ColumnDefinitions="*"
+        RowDefinitions="Auto, Auto, Auto, Auto, *, Auto, 10"
+        Style="{StaticResource DefaultGrid}">
 
 
+        <d:VerticalStackLayoutExt
+            Grid.Row="0"
+            Spacing="10"
+            Style="{StaticResource DefaultVerticalStackLayout}">
 
-                <c:EmailView Caption="Email:" Email="{Binding Email}" />
+            <c:EmailView Email="{Binding Email}" Label="Email:" />
 
-                <c:PasswordView Caption="Password:" Password="{Binding Password}" />
+            <c:PasswordView Label="Password:" Password="{Binding Password}" />
 
 
-                <HorizontalStackLayout Margin="0,15,25,15" HorizontalOptions="End">
-                    <Label
-                        FontSize="Caption"
-                        Text="Forgot Password?"
-                        TextColor="{StaticResource ColorSecorndayInformation}"
-                        TextDecorations="Underline">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
-                        </Label.GestureRecognizers>
-                    </Label>
+            <d:HorizontalStackLayoutExt Margin="0,15,25,15" HorizontalOptions="End">
+                <Label
+                    FontSize="Caption"
+                    Text="Forgot Password?"
+                    TextColor="{StaticResource ColorSecorndayInformation}"
+                    TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" />
+                    </Label.GestureRecognizers>
+                </Label>
 
-                    <Label
-                        Margin="10,0,10,0"
-                        Text="&#x2022;"
-                        TextColor="{StaticResource ColorSecorndayInformation}"
-                        TextType="Html" />
+                <Label
+                    Margin="10,0,10,0"
+                    Text="&#x2022;"
+                    TextColor="{StaticResource ColorSecorndayInformation}"
+                    TextType="Html" />
 
-                    <Label
-                        FontSize="Caption"
-                        Text="Register"
-                        TextColor="{StaticResource ColorSecorndayInformation}"
-                        TextDecorations="Underline">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding RegisterCommand}" />
-                        </Label.GestureRecognizers>
+                <Label
+                    FontSize="Caption"
+                    Text="Register"
+                    TextColor="{StaticResource ColorSecorndayInformation}"
+                    TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding RegisterCommand}" />
+                    </Label.GestureRecognizers>
 
-                    </Label>
-                </HorizontalStackLayout>
-
-                <Button
-                    Grid.Column="2"
-                    Command="{Binding LoginCommand}"
-                    IsEnabled="{Binding IsLoginDataValid}"
-                    Text="Login" />
-            </VerticalStackLayout>
-
-            <BoxView
-                Grid.Row="2"
-                Grid.Column="1"
-                IsVisible="false"
-                Style="{StaticResource HorizontalSeperator}" />
+                </Label>
+            </d:HorizontalStackLayoutExt>
 
             <Button
-                Grid.Row="3"
-                Grid.Column="1"
-                IsEnabled="False"
-                IsVisible="false"
-                Text="Facebook" />
+                Grid.Column="2"
+                Command="{Binding LoginCommand}"
+                IsEnabled="{Binding IsLoginDataValid}"
+                Text="Login" />
+        </d:VerticalStackLayoutExt>
 
-            <Button
-                Grid.Row="4"
-                Grid.Column="1"
-                IsEnabled="False"
-                IsVisible="false"
-                Text="Google" />
-        </Grid>
+        <BoxView
+            Grid.Row="1"
+            IsVisible="false"
+            Style="{StaticResource HorizontalSeperator}" />
 
+        <Button
+            Grid.Row="2"
+            IsEnabled="False"
+            IsVisible="false"
+            Text="Facebook" />
+
+        <Button
+            Grid.Row="3"
+            IsEnabled="False"
+            IsVisible="false"
+            Text="Google" />
 
         <!--  Terms of Service and Privacy Policy Links  -->
-        <local:TemsAndConditionsView AbsoluteLayout.LayoutBounds="0,1,1,40" AbsoluteLayout.LayoutFlags="YProportional,WidthProportional" />
-
-        <c:OverlayView
-            AbsoluteLayout.LayoutBounds="0,0,1,1"
-            AbsoluteLayout.LayoutFlags="All"
-            BusyDelay="2000"
-            BusyTimeout="20000"
-            IsVisible="{Binding IsBusy, Mode=TwoWay}" />
-
-    </AbsoluteLayout>
-</ContentPage>
+        <local:TemsAndConditionsView Grid.Row="5" />
+    </d:GridExt>
+</d:ContentPageExt>

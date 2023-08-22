@@ -7,7 +7,7 @@ using System.ComponentModel;
 namespace LingoHammer.UI.Modules.Authentication.RestorePassword;
 
 
-partial class RestorePasswordModel : EmailPasswordModel
+partial class RestorePasswordModel : AuthenticationModuleModel
 {
     [ObservableProperty]
     private string restorePasswordConfirmationCode = string.Empty;
@@ -28,17 +28,46 @@ partial class RestorePasswordModel : EmailPasswordModel
 
 
     [RelayCommand]
-    private void ConfirmRestorePassword()
+    private async Task ConfirmRestorePasswordAsync()
     {
         StartOperation();
-        S.Authentication.StartRequestPasswordResetConfirmation(Email, RestorePasswordConfirmationCode, Password, ProcessConfirmRestorePasswordResults);
+        try
+        {
+            await S.Authentication.PasswordConfirmResetAsync(Email, RestorePasswordConfirmationCode, Password);
+
+            (Application.Current as App).OnUserLoggedIn();
+        }
+        catch (AuthenticationServiceException ex)
+        {
+            IsRestorePasswordConfirmationDataValid = false;
+            Error = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
+
+
     [RelayCommand]
-    private void RestorePassword()
+    private async Task RestorePasswordAsync()
     {
         StartOperation();
-        S.Authentication.StartRequestPasswordReset(Email, ProcessRequestPasswordResults);
+        try
+        {
+            await S.Authentication.PasswordResetAsync(Email);
+            CurrentState = RestorePasswordState.Confirm;
+        }
+        catch (AuthenticationServiceException ex)
+        {
+            Error = ex.Message;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+
     }
 
     [RelayCommand]
@@ -80,35 +109,10 @@ partial class RestorePasswordModel : EmailPasswordModel
         IsRestorePasswordConfirmationDataValid = true;
     }
 
-    private void ProcessConfirmRestorePasswordResults(bool success, object result, string message, Exception error)
-    {
-        IsBusy = false;
-        if (success)
-        {
-            (Application.Current as App).OnUserLoggedIn();
-        }
-        else
-        {
-            IsRestorePasswordConfirmationDataValid = false;
-            Error = message ?? error.Message ?? "Password reset confirmation failed";
-        }
-    }
 
 
 
 
-    private void ProcessRequestPasswordResults(bool success, object result, string message, Exception error)
-    {
-        IsBusy = false;
-        if (success)
-        {
-            CurrentState = RestorePasswordState.Confirm;
-        }
-        else
-        {
-            Error = message ?? error.Message ?? "Password reset request failed";
-        }
-    }
 }
 
 

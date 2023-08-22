@@ -6,6 +6,7 @@ namespace LingoHammer.UI.Controls;
 public partial class EmailView
 {
     //bindable property Email
+    #region Email
     public static readonly BindableProperty EmailProperty = BindableProperty.Create(
                nameof(Email), typeof(string), typeof(EmailView), default(string), BindingMode.TwoWay
     );
@@ -14,16 +15,19 @@ public partial class EmailView
         get => (string)GetValue(EmailProperty);
         set => SetValue(EmailProperty, value);
     }
+    #endregion
 
-    //bindable property Caption
-    public static readonly BindableProperty CaptionProperty = BindableProperty.Create(
-        nameof(Caption), typeof(string), typeof(EmailView), default(string), BindingMode.TwoWay
+    //bindable property Label
+    #region Label
+    public static readonly BindableProperty LabelProperty = BindableProperty.Create(
+        nameof(Label), typeof(string), typeof(EmailView), default(string), BindingMode.TwoWay
      );
-    public string Caption
+    public string Label
     {
-        get => (string)GetValue(CaptionProperty);
-        set => SetValue(CaptionProperty, value);
+        get => (string)GetValue(LabelProperty);
+        set => SetValue(LabelProperty, value);
     }
+    #endregion
 
     private EmailViewModel ViewModel => BindingContainer?.BindingContext as EmailViewModel;
 
@@ -42,9 +46,9 @@ public partial class EmailView
             ViewModel.Email = Email;
         }
 
-        if (propertyName == CaptionProperty.PropertyName)
+        if (propertyName == LabelProperty.PropertyName)
         {
-            ViewModel.Caption = Caption;
+            ViewModel.Label = Label;
         }
     }
 

@@ -3,9 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace LingoHammer.UI.Controls;
 
-public partial class PasswordView : ContentView
+public partial class PasswordView
 {
     //bindable Password property
+    #region Password
     public static readonly BindableProperty PasswordProperty = BindableProperty.Create(
       nameof(Password), typeof(string), typeof(PasswordView), default(string), BindingMode.TwoWay
    );
@@ -14,19 +15,22 @@ public partial class PasswordView : ContentView
         get => (string)GetValue(PasswordProperty);
         set => SetValue(PasswordProperty, value);
     }
+    #endregion
 
-
-    //bindable Caption property
-    public static readonly BindableProperty CaptionProperty = BindableProperty.Create(
-       nameof(Caption), typeof(string), typeof(PasswordView), default(string), BindingMode.TwoWay
+    //bindable Label property
+    #region Label
+    public static readonly BindableProperty LabelProperty = BindableProperty.Create(
+       nameof(Label), typeof(string), typeof(PasswordView), default(string), BindingMode.TwoWay
     );
-    public string Caption
+    public string Label
     {
-        get => (string)GetValue(CaptionProperty);
-        set => SetValue(CaptionProperty, value);
+        get => (string)GetValue(LabelProperty);
+        set => SetValue(LabelProperty, value);
     }
+    #endregion
 
     //bindable ErrorMessage property
+    #region ErrorMessage
     public static readonly BindableProperty ErrorMessageProperty = BindableProperty.Create(
        nameof(ErrorMessage), typeof(string), typeof(PasswordView), default(string), BindingMode.TwoWay
     );
@@ -35,6 +39,7 @@ public partial class PasswordView : ContentView
         get => (string)GetValue(ErrorMessageProperty);
         set => SetValue(ErrorMessageProperty, value);
     }
+    #endregion  
 
 
 
@@ -56,9 +61,9 @@ public partial class PasswordView : ContentView
             ViewModel.Password = Password;
         }
 
-        if (propertyName == CaptionProperty.PropertyName)
+        if (propertyName == LabelProperty.PropertyName)
         {
-            ViewModel.Caption = Caption;
+            ViewModel.Label = Label;
         }
 
         if (propertyName == ErrorMessageProperty.PropertyName)

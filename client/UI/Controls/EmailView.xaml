@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentView
+<d:ContentViewExt
     x:Class="LingoHammer.UI.Controls.EmailView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:c="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:d="clr-namespace:LingoHammer.UI.Controls.Disposable"
     xmlns:local="clr-namespace:LingoHammer.UI.Controls"
     xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
     Style="{StaticResource DefaultContentView}">
 
-    <Grid
+    <d:GridExt
         x:Name="BindingContainer"
         ColumnDefinitions="*"
         RowDefinitions="Auto, Auto"
         Style="{StaticResource DefaultGrid}">
 
-        <Grid.BindingContext>
+        <d:GridExt.BindingContext>
             <local:EmailViewModel />
-        </Grid.BindingContext>
+        </d:GridExt.BindingContext>
 
-        <Label FontSize="Caption" Text="{Binding Caption}" />
+        <Label FontSize="Caption" Text="{Binding Label}" />
 
-        <Grid
+        <d:GridExt
             Grid.Row="1"
             ColumnDefinitions="*, 24"
             RowDefinitions="Auto"
@@ -50,6 +51,6 @@
                     <TapGestureRecognizer Command="{Binding EmailErrorInfoCommand}" />
                 </Image.GestureRecognizers>
             </Image>
-        </Grid>
-    </Grid>
-</ContentView>
+        </d:GridExt>
+    </d:GridExt>
+</d:ContentViewExt>

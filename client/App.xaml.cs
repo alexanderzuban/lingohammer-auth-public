@@ -1,6 +1,5 @@
 ﻿using LingoHammer.Services;
 using LingoHammer.UI.Modules.Authentication;
-using LingoHammer.UI.Modules.Authentication.Service;
 using LingoHammer.UI.Modules.Main;
 
 namespace LingoHammer;
@@ -10,24 +9,28 @@ public partial class App : Application
     public App()
     {
         Services = ConfigureServices();
-
         //TODO : API GATEWAY URL FOR AUTHENTICATION
         S.Settings.AuthService = "??????";
+
 
         InitializeComponent();
 
         MainPage = new EntryPage();
-        S.Authentication.StartRefreshToken((success, result, message, error) =>
+
+        MainThread.BeginInvokeOnMainThread(async () =>
         {
-            if (success)
+            try
             {
+                await S.Authentication.RefreshTokenAsync();
                 OnUserLoggedIn();
             }
-            else
+            catch (Exception)
             {
                 OnUserLoggedOut();
             }
         });
+
+
     }
 
     public void OnUserLoggedIn()

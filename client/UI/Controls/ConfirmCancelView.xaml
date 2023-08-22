@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<d:ContentViewExt
+    x:Class="LingoHammer.UI.Controls.ConfirmCancelView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="clr-namespace:LingoHammer.UI.Controls.Disposable"
+    xmlns:local="clr-namespace:LingoHammer.UI.Controls">
+
+    <d:GridExt
+        x:Name="BindingContainer"
+        Grid.Row="3"
+        ColumnDefinitions="*,*"
+        ColumnSpacing="20"
+        Style="{StaticResource DefaultGrid}">
+        <d:GridExt.BindingContext>
+            <local:ConfirmCancelViewModel />
+        </d:GridExt.BindingContext>
+
+        <Button
+            x:Name="Cancel"
+            Grid.Column="0"
+            Command="{Binding CancelCommand}"
+            IsEnabled="{Binding CanCancel}"
+            Text="{Binding CancelText}" />
+
+        <Button
+            x:Name="Ok"
+            Grid.Column="1"
+            Command="{Binding ConfirmCommand}"
+            IsEnabled="{Binding CanConfirm}"
+            Text="{Binding ConfirmText}" />
+    </d:GridExt>
+</d:ContentViewExt>

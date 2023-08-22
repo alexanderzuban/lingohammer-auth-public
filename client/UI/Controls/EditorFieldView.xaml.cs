@@ -3,14 +3,14 @@ using System.Runtime.CompilerServices;
 
 namespace LingoHammer.UI.Controls;
 
-public partial class EntryFieldView
+public partial class EditorFieldView
 {
-    private EntryFieldViewModel ViewModel => BindingContainer?.BindingContext as EntryFieldViewModel;
+    private EditorFieldViewModel ViewModel => BindingContainer?.BindingContext as EditorFieldViewModel;
 
     //bindable Label property
     #region Label
     public static readonly BindableProperty LabelProperty = BindableProperty.Create(
-            nameof(Label), typeof(string), typeof(EntryFieldView), default(string), BindingMode.TwoWay
+            nameof(Label), typeof(string), typeof(EditorFieldView), default(string), BindingMode.TwoWay
      );
     public string Label
     {
@@ -22,7 +22,7 @@ public partial class EntryFieldView
     //bindable ErrorMessage property
     #region ErrorMessage
     public static readonly BindableProperty ErrorMessageProperty = BindableProperty.Create(
-            nameof(ErrorMessage), typeof(string), typeof(EntryFieldView), default(string), BindingMode.TwoWay
+            nameof(ErrorMessage), typeof(string), typeof(EditorFieldView), default(string), BindingMode.TwoWay
     );
     public string ErrorMessage
     {
@@ -34,7 +34,7 @@ public partial class EntryFieldView
     //bindable Text property
     #region Text
     public static readonly BindableProperty TextProperty = BindableProperty.Create(
-                   nameof(Text), typeof(string), typeof(EntryFieldView), default(string), BindingMode.TwoWay
+                   nameof(Text), typeof(string), typeof(EditorFieldView), default(string), BindingMode.TwoWay
            );
     public string Text
     {
@@ -43,7 +43,7 @@ public partial class EntryFieldView
     }
     #endregion
 
-    public EntryFieldView()
+    public EditorFieldView()
     {
         InitializeComponent();
 
@@ -72,17 +72,17 @@ public partial class EntryFieldView
 
     private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(EntryFieldViewModel.Label))
+        if (e.PropertyName == nameof(EditorFieldViewModel.Label))
         {
             Label = ViewModel.Label;
         }
 
-        if (e.PropertyName == nameof(EntryFieldViewModel.ErrorMessage))
+        if (e.PropertyName == nameof(EditorFieldViewModel.ErrorMessage))
         {
             ErrorMessage = ViewModel.ErrorMessage;
         }
 
-        if (e.PropertyName == nameof(EntryFieldViewModel.Text))
+        if (e.PropertyName == nameof(EditorFieldViewModel.Text))
         {
             Text = ViewModel.Text;
         }

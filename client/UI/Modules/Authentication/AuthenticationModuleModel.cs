@@ -3,7 +3,7 @@ using LingoHammer.Converters;
 
 namespace LingoHammer.UI.Modules.Authentication
 {
-    partial class EmailPasswordModel : ObservableObject
+    partial class AuthenticationModuleModel : ObservableObject
     {
         [ObservableProperty]
         private string firstName = string.Empty;
@@ -15,7 +15,7 @@ namespace LingoHammer.UI.Modules.Authentication
         private string email = string.Empty;
 
         [ObservableProperty]
-        private bool isEmailValid;
+        private bool isEmailValid = true;
 
         [ObservableProperty]
         private string password = string.Empty;
@@ -24,21 +24,21 @@ namespace LingoHammer.UI.Modules.Authentication
         private string confirmPassword = string.Empty;
 
         [ObservableProperty]
-        private bool isPasswordConfirmMatches;
+        private bool isPasswordConfirmMatches = true;
 
         [ObservableProperty]
-        private string confirmPasswordError;
+        private string confirmPasswordError = string.Empty;
 
         [ObservableProperty]
         private string error = string.Empty;
 
         [ObservableProperty]
-        private string currentState;
+        private string currentState = string.Empty;
 
         [ObservableProperty]
-        private bool isBusy;
+        private bool isBusy = false;
 
-        public EmailPasswordModel()
+        public AuthenticationModuleModel()
         {
         }
 

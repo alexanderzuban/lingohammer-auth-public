@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace LingoHammer.UI.Controls;
 
-public class LazyStateView<TView> : LazyView<TView> where TView : View, new()
+public class LazyStateView<TView> : LazyView<TView>, IDisposable where TView : View, new()
 {
 
 
@@ -18,7 +18,16 @@ public class LazyStateView<TView> : LazyView<TView> where TView : View, new()
         set => SetValue(TriggerStateProperty, value);
     }
 
+    public void Dispose()
+    {
+        (BindingContext as IDisposable)?.Dispose();
+        BindingContext = null;
 
+        UnapplyBindings();
+
+        (Content as IDisposable)?.Dispose();
+        Content = null;
+    }
 
     protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
@@ -28,7 +37,7 @@ public class LazyStateView<TView> : LazyView<TView> where TView : View, new()
         {
             //get attached StateView.StateKey value
             var stateKey = StateView.GetStateKey(this);
-            if (stateKey == TriggerState)
+            if (stateKey == TriggerState && !HasLazyViewLoaded)
             {
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {

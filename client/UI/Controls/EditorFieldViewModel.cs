@@ -2,7 +2,7 @@
 
 namespace LingoHammer.UI.Controls;
 
-partial class EntryFieldViewModel : ObservableObject
+partial class EditorFieldViewModel : ObservableObject
 {
     [ObservableProperty]
     private string label = string.Empty;
@@ -14,7 +14,7 @@ partial class EntryFieldViewModel : ObservableObject
     [ObservableProperty]
     private string errorMessage = string.Empty;
 
-    public EntryFieldViewModel()
+    public EditorFieldViewModel()
     {
     }
 }

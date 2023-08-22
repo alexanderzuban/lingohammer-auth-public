@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace LingoHammer.UI.Modules.Information;
 
-public partial class InformationView : ContentView
+public partial class InformationView
 {
     //Bindable Properties
     //Property to set resource key for content

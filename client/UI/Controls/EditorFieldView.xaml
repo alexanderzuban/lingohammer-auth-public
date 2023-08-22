@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <d:ContentViewExt
-    x:Class="LingoHammer.UI.Controls.EntryFieldView"
+    x:Class="LingoHammer.UI.Controls.EditorFieldView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:c="clr-namespace:LingoHammer.UI.Controls"
@@ -17,7 +17,7 @@
 
 
         <d:GridExt.BindingContext>
-            <local:EntryFieldViewModel />
+            <local:EditorFieldViewModel />
         </d:GridExt.BindingContext>
 
         <Label
@@ -31,11 +31,13 @@
             ColumnDefinitions="*"
             RowDefinitions="Auto"
             Style="{StaticResource DefaultGrid}">
-            <Entry
-                IsSpellCheckEnabled="False"
-                IsTextPredictionEnabled="False"
+            <Editor
+                AutoSize="TextChanges"
+                IsSpellCheckEnabled="True"
+                IsTextPredictionEnabled="True"
                 Keyboard="Default"
-                Text="{Binding Text, Mode=TwoWay}" />
+                Text="{Binding Text, Mode=TwoWay}"
+                VerticalOptions="Fill" />
         </d:GridExt>
 
         <Label

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<d:ContentViewExt
+    x:Class="LingoHammer.UI.Controls.IconLabelView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:c="clr-namespace:LingoHammer.UI.Controls"
+    xmlns:d="clr-namespace:LingoHammer.UI.Controls.Disposable"
+    xmlns:local="clr-namespace:LingoHammer.UI.Controls">
+
+    <Border
+        x:Name="BindingContainer"
+        Padding="2"
+        BackgroundColor="{Binding BackgroundColor}"
+        Stroke="{Binding BorderColor}"
+        StrokeShape="{Binding BorderShape}"
+        StrokeThickness="{Binding BorderWidth}">
+
+        <Border.BindingContext>
+            <local:IconLabelViewModel />
+        </Border.BindingContext>
+
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding Command}" />
+        </Border.GestureRecognizers>
+
+        <Label
+            FontSize="{Binding IconSize}"
+            HorizontalOptions="Center"
+            Style="{StaticResource IconLabel}"
+            Text="{Binding Icon}"
+            TextColor="{Binding IconColor}"
+            VerticalOptions="Center" />
+    </Border>
+
+</d:ContentViewExt>

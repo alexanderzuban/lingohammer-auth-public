@@ -8,7 +8,7 @@ using System.ComponentModel;
 namespace LingoHammer.UI.Modules.Authentication.Login;
 
 
-partial class LoginPageModel : EmailPasswordModel
+partial class LoginPageModel : AuthenticationModuleModel
 {
 
     [ObservableProperty]
@@ -49,21 +49,28 @@ partial class LoginPageModel : EmailPasswordModel
     }
 
     [RelayCommand]
-    public void Login()
+    public async Task LoginAsync()
     {
         ResetState();
-        S.Authentication.StartLogin(Email, Password, (success, result, message, error) =>
+        try
+        {
+            await S.Authentication.LoginAsync(Email, Password);
+
+            (Application.Current as App).OnUserLoggedIn();
+        }
+        catch (AuthenticationServiceException ex)
+        {
+            Error = ex.ErrorCode switch
+            {
+                -1 => "User not found",
+                -2 => "Wrong password",
+                _ => ex.Message,
+            };
+        }
+        finally
         {
             IsBusy = false;
-            if (success)
-            {
-                (Application.Current as App).OnUserLoggedIn();
-            }
-            else
-            {
-                Error = message ?? error?.Message ?? "Login failed";
-            }
-        });
+        }
 
     }
 

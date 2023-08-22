@@ -4,8 +4,8 @@ namespace LingoHammer.UI.Controls;
 
 public partial class OverlayView
 {
-
     //bindable property busyTimeout
+    #region BusyTimeout
     public static readonly BindableProperty BusyTimeoutProperty =
         BindableProperty.Create(nameof(BusyTimeout), typeof(int), typeof(OverlayView), 10000);
     public int BusyTimeout
@@ -13,8 +13,10 @@ public partial class OverlayView
         get => (int)GetValue(BusyTimeoutProperty);
         set => SetValue(BusyTimeoutProperty, value);
     }
+    #endregion
 
     //bindable property busyDelay
+    #region BusyDelay
     public static readonly BindableProperty BusyDelayProperty =
         BindableProperty.Create(nameof(BusyDelay), typeof(int), typeof(OverlayView), 1000);
     public int BusyDelay
@@ -22,8 +24,10 @@ public partial class OverlayView
         get => (int)GetValue(BusyDelayProperty);
         set => SetValue(BusyDelayProperty, value);
     }
+    #endregion
 
     //bindable property busyMessage
+    #region BusyMessage
     public static readonly BindableProperty BusyMessageProperty =
         BindableProperty.Create(nameof(BusyMessage), typeof(string), typeof(OverlayView), string.Empty);
     public string BusyMessage
@@ -31,6 +35,7 @@ public partial class OverlayView
         get => (string)GetValue(BusyMessageProperty);
         set => SetValue(BusyMessageProperty, value);
     }
+    #endregion
 
     //model 
     private OverlayViewModel Model => BindingContainer?.BindingContext as OverlayViewModel;
