@@ -8,7 +8,7 @@ Resources:
   LingoHammerUserPool:
     Type: AWS::Serverless::Application
     Properties:
-      Location: UsersPool/template.yaml
+      Location: UsersPool/sam/template.yaml
       TimeoutInMinutes: 5
       Parameters:
         ParentStackName: !Ref AWS::StackName
