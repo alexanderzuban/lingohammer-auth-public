@@ -53,7 +53,7 @@ Resources:
       MfaConfiguration: "OFF"
 
   LingoHammerUserPoolClient:
-    Type: "AWS::Cognito::UserPoolClient"
+    Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: !Sub
         - 'LingoHammerUserPoolClient-${ParentStack}'
@@ -75,7 +75,7 @@ Resources:
         - "ALLOW_REFRESH_TOKEN_AUTH" 
     
   LingoHammerSetupIAMRole:
-    Type: "AWS::IAM::Role"
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -86,7 +86,7 @@ Resources:
             Action: sts:AssumeRole    
 
   LingoHammerSetupPolicy:
-    Type: "AWS::IAM::Policy" 
+    Type: AWS::IAM::Policy
     Properties:
       PolicyName: !Sub
         - 'LingoHammerSetupPolicy-${ParentStack}'
